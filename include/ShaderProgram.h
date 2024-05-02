@@ -5,7 +5,9 @@
 #endif
 #define GL_GLEXT_PROTOTYPES 1
 //#include  "SDL_opengl.h"
-#include "/home/ren/Downloads/CS3113OfficialWindowsSetup/WindowsSetup/SDL/SDL2/include/SDL_opengl.h"
+#include <SDL_opengl.h>
+
+//#include "/home/ren/Downloads/CS3113OfficialWindowsSetup/WindowsSetup/SDL/SDL2/include/SDL_opengl.h"
 #include <string>
 #include <iostream>
 #include <fstream>

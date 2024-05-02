@@ -56,8 +56,8 @@ build CMakeFiles/myFirstGame.dir/include/ShaderProgram.cpp.o: CXX_COMPILER__myFi
   OBJECT_DIR = CMakeFiles/myFirstGame.dir
   OBJECT_FILE_DIR = CMakeFiles/myFirstGame.dir/include
 
-build CMakeFiles/myFirstGame.dir/testField.cpp.o: CXX_COMPILER__myFirstGame_unscanned_Debug /home/ren/projects/myFirstGame/testField.cpp || cmake_object_order_depends_target_myFirstGame
-  DEP_FILE = CMakeFiles/myFirstGame.dir/testField.cpp.o.d
+build CMakeFiles/myFirstGame.dir/main.cpp.o: CXX_COMPILER__myFirstGame_unscanned_Debug /home/ren/projects/myFirstGame/main.cpp || cmake_object_order_depends_target_myFirstGame
+  DEP_FILE = CMakeFiles/myFirstGame.dir/main.cpp.o.d
   FLAGS = -g -fdiagnostics-color=always -D_REENTRANT
   INCLUDES = -isystem /usr/include/SDL2
   OBJECT_DIR = CMakeFiles/myFirstGame.dir
@@ -71,7 +71,7 @@ build CMakeFiles/myFirstGame.dir/testField.cpp.o: CXX_COMPILER__myFirstGame_unsc
 #############################################
 # Link the executable myFirstGame
 
-build myFirstGame: CXX_EXECUTABLE_LINKER__myFirstGame_Debug CMakeFiles/myFirstGame.dir/include/ShaderProgram.cpp.o CMakeFiles/myFirstGame.dir/testField.cpp.o | /usr/lib/x86_64-linux-gnu/libSDL2_mixer.so /usr/lib/x86_64-linux-gnu/libSDL2.so /usr/lib/x86_64-linux-gnu/libGLX.so /usr/lib/x86_64-linux-gnu/libOpenGL.so
+build myFirstGame: CXX_EXECUTABLE_LINKER__myFirstGame_Debug CMakeFiles/myFirstGame.dir/include/ShaderProgram.cpp.o CMakeFiles/myFirstGame.dir/main.cpp.o | /usr/lib/x86_64-linux-gnu/libSDL2_mixer.so /usr/lib/x86_64-linux-gnu/libSDL2.so /usr/lib/x86_64-linux-gnu/libGLX.so /usr/lib/x86_64-linux-gnu/libOpenGL.so
   FLAGS = -g
   LINK_LIBRARIES = -L/usr/lib/x86_64-linux-gnu  -lSDL2  /usr/lib/x86_64-linux-gnu/libSDL2_mixer.so  /usr/lib/x86_64-linux-gnu/libSDL2.so  /usr/lib/x86_64-linux-gnu/libGLX.so  /usr/lib/x86_64-linux-gnu/libOpenGL.so
   OBJECT_DIR = CMakeFiles/myFirstGame.dir

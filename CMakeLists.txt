@@ -22,12 +22,14 @@ add_executable(myFirstGame
         include/stb_image.h
         include/ShaderProgram.cpp
 
+        scenes/cubeScene.h
+
         systems/gameMasterSystem.h
         systems/sceneSystem.h
         systems/entitySystem.h
 #        3d.cpp
-#        main.cpp
-        testField.cpp
+        main.cpp
+#        testField.cpp
 )
 
 # Include SDL2 headers for the executable

@@ -1,3 +1,4 @@
+
 #ifndef entity
 #define entity
 
@@ -32,19 +33,25 @@
 
 #include"collisionSystem.h"
 
-enum Type{Blocking, NonBlocking};
+enum EntityType{Blocking, NonBlocking};
 
 class Entity{
 public:
     std::string name;
-    Type type;
+    EntityType entityType;
     float moveSpeed;
     std::pair<float, float> precisePosition;   //note this is taken from glm vec3, we need one more layer of conversion
     std::pair<int,int>collisionPosition;
-
-
-
     CollisionSystem* collisionSystem;
+
+    bool isActive = true;   //maybe putting this in initialization is better
+
+    // ––––– ANIMATION ––––– //
+    int* animationRight = NULL, // move to the right
+    * animationLeft = NULL, // move to the left
+    * animationUp   = NULL, // move upwards
+    * animationDown = NULL; // move downwards
+
 
 private:    //only wrap a few private internal methods
 
@@ -88,9 +95,9 @@ private:    //only wrap a few private internal methods
         return prospectPosition;
     }
 
-    void updatePosition(std::pair<int, int> instruction){   //note we need to assume small moveSpeed
-        precisePosition.first += moveSpeed * instruction.first;
-        precisePosition.second += moveSpeed * instruction.second;   //update the actual precise position
+    void updatePosition(std::pair<int, int> instruction, float deltaTime){   //note we need to assume small moveSpeed
+        precisePosition.first += moveSpeed * instruction.first * deltaTime;
+        precisePosition.second += moveSpeed * instruction.second * deltaTime;   //update the actual precise position
 
         collisionPosition = prospectPosition(instruction);  //update the position on the collision map
     }
@@ -110,22 +117,22 @@ public:
  *  just use something like an aStar instruction calculated by some algo
  *  it saves time to only have to call it once and generate a pair of x and y
      *
-     *  we are not doing inheritance because I want two entity types to
+     *  we are not doing inheritance because I want two entity entityTypes to
      *  be able to change into each other
  */
-    void move(std::pair<int, int> instruction){
+    void move(std::pair<int, int> instruction, float deltaTime){
         if(collisionSystem->allowMovement(prospectPosition(instruction))){//first check if the given movement is valid
             //todo: make a move
-            if(Blocking==type){
+            if(Blocking==entityType){
                 collisionSystem->removeBlockingEntity(collisionPosition);   //remove the old collision position
-                updatePosition(instruction);//update both the precise and the collision position
+                updatePosition(instruction, deltaTime);//update both the precise and the collision position
                 collisionSystem->addBlockingEntity(collisionPosition, this);    //now collision map is updated
-            }else if(NonBlocking==type){
+            }else if(NonBlocking==entityType){
                 collisionSystem->removeNonBlockingEntity(collisionPosition);
-                updatePosition(instruction);
+                updatePosition(instruction, deltaTime);
                 collisionSystem->addNonBlockingEntity(collisionPosition, this);
             }else{//error msg
-                std::cerr<<"Unknown blocking/nonblocking entity type encountered when moving "<<
+                std::cerr<<"Unknown blocking/nonblocking entity entityType encountered when moving "<<
                 name<<std::endl;
             }
         }

@@ -339,7 +339,7 @@ int main(int argc, char* argv[]) {
     g_shader_program.load(V_SHADER_PATH, F_SHADER_PATH);    //sprite
     g_shader_program.cleanup();
     glUseProgram(0);
-
+////all these should be the initialization
 
     // Retrieve the location of the view matrix uniform
 

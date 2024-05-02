@@ -39,10 +39,10 @@ oh, and, platform location x 4+, y-0.1+
 #include <SDL_mixer.h>
 #include <SDL.h>
 #include <SDL_opengl.h>
-#include "include/glm/mat4x4.hpp"
-#include "include/glm/gtc/matrix_transform.hpp"
-#include "include/ShaderProgram.h"
-#include "include/stb_image.h"
+#include "../include/glm/mat4x4.hpp"
+#include "../include/glm/gtc/matrix_transform.hpp"
+#include "../include/ShaderProgram.h"
+#include "../include/stb_image.h"
 #include "cmath"
 #include <ctime>
 #include <vector>
