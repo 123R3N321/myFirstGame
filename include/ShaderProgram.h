@@ -16,7 +16,7 @@
 
 class ShaderProgram
 {
-private:
+public:
     void cleanup();
     
     GLuint load_shader_from_string(const std::string &shader_contents, GLenum shader_type);

@@ -25,9 +25,9 @@ add_executable(myFirstGame
         systems/gameMasterSystem.h
         systems/sceneSystem.h
         systems/entitySystem.h
-#        3d.cpp
+        3d.cpp
 #        main.cpp
-        testField.cpp
+#        testField.cpp
 )
 
 # Include SDL2 headers for the executable

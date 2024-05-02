@@ -334,7 +334,19 @@ int main(int argc, char* argv[]) {
 
     SDL_GLContext context = SDL_GL_CreateContext(window);
 
-//    g_shader_program.load(V_SHADER_PATH, F_SHADER_PATH);    //sprite
+
+//todo: below is the magic fix to bridge 2d and 3d shader! the 3rd line!!!!!!!
+    g_shader_program.load(V_SHADER_PATH, F_SHADER_PATH);    //sprite
+    g_shader_program.cleanup();
+    glUseProgram(0);
+
+
+    // Retrieve the location of the view matrix uniform
+
+// Set the view matrix uniform to the saved view matrix
+
+
+
     DICE1ID = load_texture(DICE1); //sprite
     DICE2ID = load_texture(DICE2); //sprite
     DICE3ID = load_texture(DICE3); //sprite
@@ -343,6 +355,9 @@ int main(int argc, char* argv[]) {
     DICE6ID = load_texture(DICE6); //sprite
 
     //    LOG("front texture ID: "<< frontTextureID<<"\n");
+        // Delete existing shader program if it exists
+
+
 
 
 
