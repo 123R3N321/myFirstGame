@@ -76,9 +76,8 @@ public:
      * @param mapData is the vector of a vector of ints, a 2d array, we also render in this order (left right top bottom)
      */
     CollisionSystem(std::vector<std::vector<int>> & mapArr){    //use reference, should be a good idea
-        int i, j;
-        for(i;i<mapArr.size();i++){
-            for(j; j<mapArr[i].size();j++){
+        for(int i=0;i<mapArr.size();i++){
+            for(int j=0; j<mapArr[i].size();j++){
                 occupancyMap[std::pair(i,j)] =  std:: pair(nullptr, nullptr);
                 //initialize all to be null pointer
             }//tested. Tentatively works ok
@@ -127,14 +126,13 @@ public:
     }
 
     /**
-     * we do not bother to write a method to remove non-blocking entities
-     * if a non blocking isn't there, implied it is destroyed
-     * we simply either desactivate it (stop rendering and updating)
-     * or adjust its appearance and set blocking power to zero (i.e. burnt wheat field)
-     * Because ultimately the only thing non blocking affords us
-     * is that it slows down another passing entity, or makes world interactions
-     * neither is a concern here.
+     * we do not need any safeguard here since non blocking entity is not a big concern
+     * @param coord
      */
+    void removeNonBlockingEntity(std::pair<int, int> coord){
+        occupancyMap[coord].second = nullptr; //non blocking entity removed from collision system
+    }
+
 };
 
 #endif

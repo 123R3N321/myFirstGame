@@ -12,6 +12,7 @@
 #include "cmath"
 #include <ctime>
 #include <vector>
+#include <iostream>
 
 //////////////////////above can be ignored. We never touch those///////////////////////////////////////////
 /**
@@ -31,28 +32,106 @@
 
 #include"collisionSystem.h"
 
+enum Type{Blocking, NonBlocking};
+
 class Entity{
 public:
-    int id;
-    Entity(int id=3){}
+    std::string name;
+    Type type;
+    float moveSpeed;
+    std::pair<float, float> precisePosition;   //note this is taken from glm vec3, we need one more layer of conversion
+    std::pair<int,int>collisionPosition;
+
+
+
+    CollisionSystem* collisionSystem;
+
+private:    //only wrap a few private internal methods
 
     /**
-     * be very careful
-     * this method does three things:
-     * 1    ask for collision system's permission to move (float round up)
-     * 2    perform the movement
-     * 3    inform collision system of the location of itself (float round up)
-     *      (first, remove from old occupancy spot, then, go into new spot)
-     *
-     * @param instruction a pair containing the x and y value of attempted movement
-     *  note that I use a pair not just two args because potentially I will
-     *  just use something like an aStar instruction calculated by some algo
-     *  it saves time to only have to call it once and generate a pair of x and y
+     * overall we need to have 4 rounded values for truly safe collision detection
      */
-    CollisionSystem* collisionSystem;
-    void move(std::pair<int, int> instruction){
+    /**
+     * does not make modifications.
+     * @return a rounded up pair for collision system to handle the record
+     */
+    std::pair<int, int> roundPosition1(){//round up up for collision system
+        return std::pair<int, int>(std::ceil(precisePosition.first), std::ceil(precisePosition.second));
+    }
+    std::pair<int, int> roundPosition2(){//round up down for collision system
+        return std::pair<int, int>(std::ceil(precisePosition.first), std::floor(precisePosition.second));
+    }
+    std::pair<int, int> roundPosition3(){//round down down for collision system
+        return std::pair<int, int>(std::floor(precisePosition.first), std::floor(precisePosition.second));
+    }
+    std::pair<int, int> roundPosition4(){//round down up for collision system
+        return std::pair<int, int>(std::floor(precisePosition.first), std::ceil(precisePosition.second));
+    }
 
+    /**
+     * internal use only function, to actually update the position
+     * @param instruction passed forward from move() method
+     */
+    std::pair<int, int>prospectPosition(std::pair<int, int> instruction){
+        std::pair<int,int> prospectPosition(collisionPosition);
+        if(instruction.first>0 && instruction.second>0) {    //pos pos
+            collisionPosition = roundPosition1();
+        }else if (instruction.first>0 && instruction.second<0){ //pos neg
+            collisionPosition = roundPosition2();
+        }else if(instruction.first<0 && instruction.second<0){ //neg neg
+            collisionPosition = roundPosition3();
+        }else if(instruction.first<0 && instruction.second>0){ //neg pos
+            collisionPosition = roundPosition4();
+        }else{  //edge case of either going to zero
+         std::cerr<<"moving instruction on "<<name<< "is 0"<<std::endl;
+        }
+        return prospectPosition;
+    }
+
+    void updatePosition(std::pair<int, int> instruction){   //note we need to assume small moveSpeed
+        precisePosition.first += moveSpeed * instruction.first;
+        precisePosition.second += moveSpeed * instruction.second;   //update the actual precise position
+
+        collisionPosition = prospectPosition(instruction);  //update the position on the collision map
+    }
+
+public:
+
+    /**
+ * be very careful
+ * this method does three things:
+ * 1    ask for collision system's permission to move (float round up)
+ * 2    perform the movement
+ * 3    inform collision system of the location of itself (float round up)
+ *      (first, remove from old occupancy spot, then, go into new spot)
+ *
+ * @param instruction a pair containing the x and y value of attempted movement
+ *  note that I use a pair not just two args because potentially I will
+ *  just use something like an aStar instruction calculated by some algo
+ *  it saves time to only have to call it once and generate a pair of x and y
+     *
+     *  we are not doing inheritance because I want two entity types to
+     *  be able to change into each other
+ */
+    void move(std::pair<int, int> instruction){
+        if(collisionSystem->allowMovement(prospectPosition(instruction))){//first check if the given movement is valid
+            //todo: make a move
+            if(Blocking==type){
+                collisionSystem->removeBlockingEntity(collisionPosition);   //remove the old collision position
+                updatePosition(instruction);//update both the precise and the collision position
+                collisionSystem->addBlockingEntity(collisionPosition, this);    //now collision map is updated
+            }else if(NonBlocking==type){
+                collisionSystem->removeNonBlockingEntity(collisionPosition);
+                updatePosition(instruction);
+                collisionSystem->addNonBlockingEntity(collisionPosition, this);
+            }else{//error msg
+                std::cerr<<"Unknown blocking/nonblocking entity type encountered when moving "<<
+                name<<std::endl;
+            }
+        }
 
     }
+
+    //todo: add more entity methods
 };
 #endif

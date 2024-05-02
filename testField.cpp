@@ -49,12 +49,6 @@ vector<vector<int>> map = {
         {1,1,0}
 };
 
-Entity ent0;
-Entity ent1(5);
-CollisionSystem system(map);
-system.occupancyMap[pair(0,1)].first = &ent0;
-    system.occupancyMap[pair(1,1)].first = &ent0;
-cout << system.occupancyMap[pair(0,1)].first->id<<" shld be 3"<<endl;
-    cout << system.occupancyMap[pair(1,1)].first->id<<" shld be 5"<<endl;
+std:: cout<<std::floor(1.0f)<<std::endl;
     return 0;
 }

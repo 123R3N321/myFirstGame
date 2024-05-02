@@ -17,6 +17,7 @@
 
 //////////////////////above can be ignored. We never touch those///////////////////////////////////////////
 
+#include "../systems/collisionSystem.h"
 #include "../systems/entitySystem.h"
 #include "../systems/inputSystem.h"
 #include "../systems/sceneSystem.h"
@@ -30,9 +31,12 @@
 //#include "../scenes/transitionScene.h"
 //#include "../scenes/worldScene.h"
 
+#define LOG(argument) std::cout << argument << '\n'
 
 #ifndef gameMaster
 #define gameMaster
+
+
 
 class GameMaster{
 public:
@@ -49,7 +53,19 @@ public:
      *  2. the pointers to those scenes themselves
      */
     std::vector<Scene*> scenes; //contains pointers to all scenes, all should be on the heap btw
+    ////skip entity system and collision system as they are handled by scene////
 
+
+    int playerlifeCount;    //how many lives does the player have left
+    int playerEnemySlain;   //how many enemies has the player killed
+
+    GameMaster(std::vector<Scene*> scenes, int playerLifeCount = 3, int playerEnemySlain = 0) :
+        scenes(scenes), playerlifeCount(playerLifeCount), playerEnemySlain(playerEnemySlain){
+        LOG("===GameMaster Initialized===");
+        for(int i = 0; i<scenes.size(); ++i){
+            LOG("Loaded scene: "<<scenes[i]->name); //debugging message to check each loaded scene
+        }
+    }
 
 };
 

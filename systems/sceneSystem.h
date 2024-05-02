@@ -10,6 +10,8 @@
  */
 class Scene{
 public:
+    std::string name;   //each scene's name only used for debugging
+
     virtual ~Scene() = 0;   //since this is abstract class, we don have constructor
 
     /**
