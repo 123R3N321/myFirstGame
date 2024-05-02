@@ -17,6 +17,39 @@
 #include "../include/glm/mat4x4.hpp"
 #include "../include/glm/gtc/matrix_transform.hpp"
 
+
+const int NUMBER_OF_TEXTURES = 1;
+const GLint LEVEL_OF_DETAIL = 0;
+const GLint TEXTURE_BORDER = 0;
+
+
+GLuint load_texture(const char* filepath)
+{
+    int width, height, number_of_components;
+    unsigned char* image = stbi_load(filepath, &width, &height, &number_of_components, STBI_rgb_alpha);
+
+    if (image == NULL)
+    {
+        LOG("Unable to load image. Make sure the path is correct.");
+        assert(false);
+    }
+
+    GLuint texture_id;
+    glGenTextures(NUMBER_OF_TEXTURES, &texture_id);
+    glBindTexture(GL_TEXTURE_2D, texture_id);
+    glTexImage2D(GL_TEXTURE_2D, LEVEL_OF_DETAIL, GL_RGBA, width, height, TEXTURE_BORDER, GL_RGBA, GL_UNSIGNED_BYTE, image);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    stbi_image_free(image);
+
+    return texture_id;
+}
+
+
 enum SceneType{Blank, Normal};
 
 /**
@@ -41,13 +74,18 @@ public:
     std::vector<float> m_vertices;  //for texture binding
     std::vector<float> m_texture_coordinates;
 
+
     // The boundaries of the map dependent on size of tile
     float m_left_bound, m_right_bound, m_top_bound, m_bottom_bound;
+
+
+
+
 
     virtual ~Scene(){};   //since this is abstract class, we don have constructor
 
     Scene(SceneType sceneTypeArg = Blank,int widthArg = 0, int heightArg = 0,
-          std::vector<std::vector<int>> * mapArr = nullptr,
+          std::vector<std::vector<int>> * mapArrArg = nullptr,
           GLuint texture_id = 0, float tile_size = 0, int tile_count_x = 0, int tile_count_y = 0)
     {
         sceneType = sceneTypeArg;
@@ -55,6 +93,7 @@ public:
             m_width = widthArg;
             m_height = heightArg;
             m_texture_id = texture_id;
+            mapArr = mapArrArg;
 
             m_tile_size = tile_size;
             m_tile_count_x = tile_count_x;

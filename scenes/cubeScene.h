@@ -1,34 +1,15 @@
-
-#define LOG(argument) std::cout << argument << '\n'
-
-
 #define GL_SILENCE_DEPRECATION
 #define STB_IMAGE_IMPLEMENTATION    //this is for sprite
 #define LOG(argument) std::cout << argument << '\n'
-
-#include <vector>
-#include <cmath>
-#include <SDL2/SDL_image.h>
-
-#include <SDL_mixer.h>
-#include <SDL.h>
-#include <SDL_opengl.h>
-#include "../include/glm/mat4x4.hpp"
-#include "../include/glm/gtc/matrix_transform.hpp"
-#include "../include/glm/gtc/type_ptr.hpp"
-#include "../include/ShaderProgram.h"
-#include "../include/stb_image.h"
 #include "../systems/sceneSystem.h"
 
 
 
-const int WINDOW_WIDTH = 800;   //use a smaller window
-const int WINDOW_HEIGHT = 600;
+const int cubeSceneWidth = 1280;   //use a smaller window
+const int cubeSceneHeight = 960;
 
 
-const char V_SHADER_PATH[] = "/home/ren/projects/myGames/include/shaders/vertex_textured.glsl",
-        F_SHADER_PATH[] = "/home/ren/projects/myGames/include/shaders/fragment_textured.glsl",
-        FONT_SPRITE_FILEPATH[]   = "/home/ren/projects/myGames/include/assets/font1.png",
+const char
         DICE1[] = "/home/ren/projects/myGames/include/assets/Moon.jpeg",
         DICE2[] = "/home/ren/projects/myGames/include/assets/Moon.jpeg",
         DICE3[] = "/home/ren/projects/myGames/include/assets/Moon.jpeg",
@@ -212,9 +193,7 @@ public:
     GLuint DICE5ID;
     GLuint DICE6ID;
 
-    const int NUMBER_OF_TEXTURES = 1;
-    const GLint LEVEL_OF_DETAIL = 0;
-    const GLint TEXTURE_BORDER = 0;
+
 
     float totalRotationAngle = 0.0f;    //non-user tracker param
     float rotationAngle = 0.0f;
@@ -225,31 +204,7 @@ public:
 
 
 
-    GLuint load_texture(const char* filepath)
-    {
-        int width, height, number_of_components;
-        unsigned char* image = stbi_load(filepath, &width, &height, &number_of_components, STBI_rgb_alpha);
 
-        if (image == NULL)
-        {
-            LOG("Unable to load image. Make sure the path is correct.");
-            assert(false);
-        }
-
-        GLuint texture_id;
-        glGenTextures(NUMBER_OF_TEXTURES, &texture_id);
-        glBindTexture(GL_TEXTURE_2D, texture_id);
-        glTexImage2D(GL_TEXTURE_2D, LEVEL_OF_DETAIL, GL_RGBA, width, height, TEXTURE_BORDER, GL_RGBA, GL_UNSIGNED_BYTE, image);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-        stbi_image_free(image);
-
-        return texture_id;
-    }
 
 
 
@@ -338,7 +293,7 @@ public:
         // Set up the projection matrix
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), (GLfloat)WINDOW_WIDTH / (GLfloat)WINDOW_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), (GLfloat)cubeSceneWidth / (GLfloat)cubeSceneHeight, 0.1f, 100.0f);
         glLoadMatrixf(glm::value_ptr(projectionMatrix));
 
         // Set up the modelview matrix
