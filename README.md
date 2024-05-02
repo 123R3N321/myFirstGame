@@ -38,3 +38,10 @@ global param in each scene h-file for adjustments
 OOP approach to the max (why else are we using cpp at all)
 dynamic memory for ambitious large game scenes (memory leak is your top concern)
 
+
+- navigate the main cpp-file:
+
+The first thing to be defined is a GameMaster which is a struct holding pointers to all component systems
+the GameMaster is defined only in main for the reason that not all game contains all the systems
+such a a game without sound, or without input
+

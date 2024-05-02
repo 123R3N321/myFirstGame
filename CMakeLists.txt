@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.27)
-project(myGames)
+project(myFirstGame)
 
 # Find SDL2 and OpenGL
 find_package(SDL2 REQUIRED)
@@ -17,35 +17,28 @@ pkg_check_modules(SDL2_Mixer REQUIRED IMPORTED_TARGET SDL2_mixer)
 set(CMAKE_CXX_STANDARD 17)
 
 # Create the executable
-add_executable(myGames
-#        testField.cpp
-#        Entity.cpp
-#        Entity.h
-#        SmartEntity.cpp
-#        SmartEntity.h
-#        Map.cpp
-#        Map.h
+add_executable(myFirstGame
         include/ShaderProgram.h
         include/stb_image.h
         include/ShaderProgram.cpp
-#        exercise.cpp
-#        pong.cpp
-#        simpleGame.cpp
-#        Menu.cpp
-#        Menu.h
-        3d.cpp
+
+        systems/gameMasterSystem.h
+        systems/sceneSystem.h
+        systems/entitySystem.h
+#        3d.cpp
 #        main.cpp
+        testField.cpp
 )
 
 # Include SDL2 headers for the executable
-target_include_directories(myGames PRIVATE
+target_include_directories(myFirstGame PRIVATE
         ${SDL2_INCLUDE_DIRS}
 #        ${SDL2_MIXER_INCLUDE_DIRS}
 #        ${SDL2_IMAGE_INCLUDE_DIRS}
 )
 
 # Link against SDL2 and OpenGL
-target_link_libraries(myGames PRIVATE
+target_link_libraries(myFirstGame PRIVATE
         ${SDL2_LIBRARIES}
         PkgConfig::SDL2_Mixer
 #        ${SDL2_MIXER_LIBRARIES}

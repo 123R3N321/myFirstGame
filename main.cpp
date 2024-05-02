@@ -4,8 +4,8 @@
 #define LOG(argument) std::cout << argument << '\n'
 #define GL_GLEXT_PROTOTYPES 1
 #define FIXED_TIMESTEP 0.0166666f
-#define LEVEL1_WIDTH 14
-#define LEVEL1_HEIGHT 5
+//#define LEVEL1_WIDTH 14
+//#define LEVEL1_HEIGHT 5
 
 #define ENEMY_COUNT 3    //add enemies
 
@@ -29,6 +29,7 @@
 #include "systems/entitySystem.h"
 #include "systems/inputSystem.h"
 #include "systems/textSystem.h"
+#include "systems/soundSystem.h"
 
 
 #include "scenes/worldScene.h"
@@ -38,15 +39,6 @@ GLuint  g_text_texture_id;
 const int FONTBANK_SIZE        = 16;
 volatile int enemyCount = ENEMY_COUNT;
 volatile bool GameOver = false;
-
-/**
- * Agenda:
- *  implement meta_init() to modify map and enemy
- *  --->next, implement life-count mechanism
- *  --->next, optionally handle shader
- *  --->next, optionally handle music
- */
-
 
 //Set metaData which is global variable
 int meta_player_life = 3;

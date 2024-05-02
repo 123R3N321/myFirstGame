@@ -843,7 +843,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "myGames"
+			"value" : "myFirstGame"
 		},
 		{
 			"name" : "CMAKE_RANLIB",
@@ -1856,6 +1856,42 @@
 			],
 			"type" : "INTERNAL",
 			"value" : "1"
+		},
+		{
+			"name" : "myFirstGame_BINARY_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "/home/ren/projects/myFirstGame/cmake-build-debug"
+		},
+		{
+			"name" : "myFirstGame_IS_TOP_LEVEL",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "ON"
+		},
+		{
+			"name" : "myFirstGame_SOURCE_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "/home/ren/projects/myFirstGame"
 		},
 		{
 			"name" : "myGames_BINARY_DIR",
