@@ -2,7 +2,7 @@
 #define STB_IMAGE_IMPLEMENTATION    //this is for sprite
 #define LOG(argument) std::cout << argument << '\n'
 #include "../systems/sceneSystem.h"
-
+#include "../include/glm/gtc/type_ptr.hpp"
 
 
 const int cubeSceneWidth = 1280;   //use a smaller window
@@ -285,6 +285,8 @@ public:
 
 
     void update(){}
+
+    virtual void renderEntities(){};
 
     virtual void render(ShaderProgram* shader = nullptr) {//note that the cubeScene does not need a shader
         // Clear the screen

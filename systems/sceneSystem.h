@@ -9,6 +9,7 @@
 #include <GL/glew.h>
 #endif
 #define GL_GLEXT_PROTOTYPES 1
+#include <utility>
 #include <vector>
 #include <cmath>
 #include <SDL.h>
@@ -16,6 +17,8 @@
 #include <SDL2/SDL_image.h>
 #include "../include/glm/mat4x4.hpp"
 #include "../include/glm/gtc/matrix_transform.hpp"
+
+class Entity; //forward type declare
 
 
 const int NUMBER_OF_TEXTURES = 1;
@@ -59,6 +62,9 @@ enum SceneType{Blank, Normal};
  */
 class Scene{
 public:
+
+    Entity* player = nullptr;   //note that only some scenes actually own a player
+
     SceneType sceneType;
     std::string name;   //each scene's name only used for debugging
 
@@ -73,6 +79,8 @@ public:
 
     std::vector<float> m_vertices;  //for texture binding
     std::vector<float> m_texture_coordinates;
+    std::vector<Entity*> entities;  //each scene governs their own entities. ALl of them.
+    CollisionSystem* collisionSystem;    //keep uninitialized
 
 
     // The boundaries of the map dependent on size of tile
@@ -86,7 +94,8 @@ public:
 
     Scene(SceneType sceneTypeArg = Blank,int widthArg = 0, int heightArg = 0,
           std::vector<std::vector<int>> * mapArrArg = nullptr,
-          GLuint texture_id = 0, float tile_size = 0, int tile_count_x = 0, int tile_count_y = 0)
+          GLuint texture_id = 0, float tile_size = 0, int tile_count_x = 0, int tile_count_y = 0,
+          std::vector<Entity*> entitiesArg = {})
     {
         sceneType = sceneTypeArg;
         if(Normal == sceneType){    //strictly check for Normal type
@@ -98,6 +107,9 @@ public:
             m_tile_size = tile_size;
             m_tile_count_x = tile_count_x;
             m_tile_count_y = tile_count_y;
+            entities = std::move(entitiesArg);//interesting
+            collisionSystem = nullptr;  //we do not make any initialization here
+                                        //each scene has isolated collision systems
 
             build();
         }
@@ -162,7 +174,9 @@ public:
         m_bottom_bound = -(m_tile_size * m_height) + (m_tile_size / 2);
 
     };
-    virtual void update() = 0;
+    virtual void update(std::pair<int,int>instruction = std::pair<int,int>(0,0), float delta_time = 0.0f) = 0;
+
+    virtual void renderEntities(ShaderProgram* program) = 0;  //only implemented for Normal type
 
     virtual void render(ShaderProgram* shader = nullptr){//note that the cubeScene does not need a shader
         if(Normal == sceneType){
@@ -181,6 +195,7 @@ public:
             glDrawArrays(GL_TRIANGLES, 0, (int) m_vertices.size() / 2);
             glDisableVertexAttribArray(shader->get_position_attribute());
             glDisableVertexAttribArray(shader->get_position_attribute());
+            renderEntities(shader);
         }
         //we will define different behavior for the cube scene there. Customized.
     };

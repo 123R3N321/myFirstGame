@@ -1,6 +1,9 @@
+#pragma once
 
 #ifndef entity
 #define entity
+
+#define LOG(argument) std::cout << argument << '\n'
 
 
 #include <SDL_mixer.h>
@@ -32,6 +35,32 @@
  */
 
 #include"collisionSystem.h"
+#include "sceneSystem.h"
+
+
+
+const char
+//SPRITESHEET_FILEPATH[]  = "/home/ren/projects/myGames/include/assets/george_0.png",
+PLAYER_FILEPATH[]  = "/home/ren/projects/myGames/include/assets/Pikachu4x4.png",
+        ENEMY0_SPRITE_PATH[] = "/home/ren/projects/myGames/include/assets/RachelsRocket.png",
+        MAP_TILESET_FILEPATH[]  = "/home/ren/projects/myGames/include/assets/simpleTile.png",
+        BGM_FILEPATH[]          = "/home/ren/projects/myGames/include/assets/LittlerootTownBGM.mp3",
+        JUMP_SFX_FILEPATH[]     = "/home/ren/projects/myGames/include/assets/pika.wav";
+
+
+
+/**
+ * convert between a pair of x y val to vec3 used by glm
+ * @return
+ */
+glm::vec3 vecPostion(std::pair<float, float> position){
+    glm::vec3 vec(0.0f);
+    vec.x = position.first;
+    vec.y = -position.second;
+    return vec;
+}
+
+
 
 enum EntityType{Blocking, NonBlocking};
 
@@ -44,13 +73,93 @@ public:
     std::pair<int,int>collisionPosition;
     CollisionSystem* collisionSystem;
 
-    bool isActive = true;   //maybe putting this in initialization is better
+    bool m_is_active = true;   //maybe putting this in initialization is better
+    bool m_is_moving = false;   //this will be updated by instruction system
 
     // ––––– ANIMATION ––––– //
-    int* animationRight = NULL, // move to the right
-    * animationLeft = NULL, // move to the left
-    * animationUp   = NULL, // move upwards
-    * animationDown = NULL; // move downwards
+    int* m_animation_right = NULL, // move to the right
+    * m_animation_left = NULL, // move to the left
+    * m_animation_up   = NULL, // move upwards
+    * m_animation_down = NULL; // move downwards
+
+    glm::mat4 m_model_matrix;
+
+    float m_width = 1;  //might not be needed
+    float m_height = 1;
+
+    static const int    SECONDS_PER_FRAME = 4;
+    static const int    LEFT    = 0,
+            RIGHT   = 1,
+            UP      = 2,
+            DOWN    = 3;
+
+    // ————— ANIMATION ————— //
+    int** m_walking = new int* [4]
+            {
+                    m_animation_left,
+                    m_animation_right,
+                    m_animation_up,
+                    m_animation_down
+            };
+
+    int m_animation_frames  = 0,
+            m_animation_index   = 0,
+            m_animation_cols    = 0,
+            m_animation_rows    = 0;
+
+    int*    m_animation_indices = NULL;
+    float   m_animation_time = 0.0f;
+
+    glm::vec3 m_velocity;
+    glm::vec3 m_acceleration;   //for the moment, not used
+
+    GLuint    m_texture_id;
+
+
+    Entity();
+    ~Entity(){};
+
+    void draw_sprite_from_texture_atlas(ShaderProgram* program, GLuint texture_id, int index)
+    {
+        // Step 1: Calculate the UV location of the indexed frame
+        float u_coord = (float)(index % m_animation_cols) / (float)m_animation_cols;
+        float v_coord = (float)(index / m_animation_cols) / (float)m_animation_rows;
+
+        // Step 2: Calculate its UV size
+        float width = 1.0f / (float)m_animation_cols;
+        float height = 1.0f / (float)m_animation_rows;
+
+        // Step 3: Just as we have done before, match the texture coordinates to the vertices
+        float tex_coords[] =
+                {
+                        u_coord, v_coord + height, u_coord + width, v_coord + height, u_coord + width, v_coord,
+                        u_coord, v_coord + height, u_coord + width, v_coord, u_coord, v_coord
+                };
+
+        float vertices[] =
+                {
+                        -0.5, -0.5, 0.5, -0.5,  0.5, 0.5,
+                        -0.5, -0.5, 0.5,  0.5, -0.5, 0.5
+                };
+
+        // Step 4: And render
+        glBindTexture(GL_TEXTURE_2D, texture_id);
+
+        glVertexAttribPointer(program->get_position_attribute(), 2, GL_FLOAT, false, 0, vertices);
+        glEnableVertexAttribArray(program->get_position_attribute());
+
+        glVertexAttribPointer(program->get_tex_coordinate_attribute(), 2, GL_FLOAT, false, 0, tex_coords);
+        glEnableVertexAttribArray(program->get_tex_coordinate_attribute());
+
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        glDisableVertexAttribArray(program->get_position_attribute());
+        glDisableVertexAttribArray(program->get_tex_coordinate_attribute());
+    }
+
+
+
+
 
 
 private:    //only wrap a few private internal methods
@@ -121,6 +230,12 @@ public:
      *  be able to change into each other
  */
     void move(std::pair<int, int> instruction, float deltaTime){
+        if (0 == instruction.first && 0 == instruction.second){
+            m_is_moving = false;
+            return;
+        }
+        m_is_moving = true;
+
         if(collisionSystem->allowMovement(prospectPosition(instruction))){//first check if the given movement is valid
             //todo: make a move
             if(Blocking==entityType){
@@ -139,6 +254,98 @@ public:
 
     }
 
-    //todo: add more entity methods
+
+    void update(std::pair<int, int> instruction, float deltaTime)
+    {
+
+
+        if (!m_is_active) return;
+
+        if (m_animation_indices != NULL)
+        {
+            if (m_is_moving)
+            {
+                m_animation_time += deltaTime;
+                float frames_per_second = (float)1 / SECONDS_PER_FRAME;
+
+                if (m_animation_time >= frames_per_second)
+                {
+                    m_animation_time = 0.0f;
+                    m_animation_index++;
+
+                    if (m_animation_index >= m_animation_frames)
+                    {
+                        m_animation_index = 0;
+                    }
+                }
+            }
+        }
+        updatePosition(instruction, deltaTime); //position changes
+        m_model_matrix = glm::mat4(1.0f);
+        m_model_matrix = glm::translate(m_model_matrix, vecPostion(precisePosition));   //the translation happens with precise location
+    }
+
+
+    void render(ShaderProgram* program) //exact code copy
+    {
+        program->set_model_matrix(m_model_matrix);
+
+        if (m_animation_indices != NULL)
+        {
+            draw_sprite_from_texture_atlas(program, m_texture_id, m_animation_indices[m_animation_index]);
+            return;
+        }
+
+        float vertices[] = { -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5 };
+        float tex_coords[] = { 0.0,  1.0, 1.0,  1.0, 1.0, 0.0,  0.0,  1.0, 1.0, 0.0,  0.0, 0.0 };
+
+        glBindTexture(GL_TEXTURE_2D, m_texture_id);
+
+        glVertexAttribPointer(program->get_position_attribute(), 2, GL_FLOAT, false, 0, vertices);
+        glEnableVertexAttribArray(program->get_position_attribute());
+        glVertexAttribPointer(program->get_tex_coordinate_attribute(), 2, GL_FLOAT, false, 0, tex_coords);
+        glEnableVertexAttribArray(program->get_tex_coordinate_attribute());
+
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        glDisableVertexAttribArray(program->get_position_attribute());
+        glDisableVertexAttribArray(program->get_tex_coordinate_attribute());
+    }
+
+    /**
+     * initcode matches the mapArr numbers, default give a small grass
+     * @param initcode
+     */
+    Entity(int initcode=1, int x = 0, int y = 0 ){
+        precisePosition = std::pair<int, int>(x,y);
+        collisionPosition = std::pair<float, float>(x,y);
+        if(1 == initcode){
+
+        }else if(2 == initcode){
+
+        }else if(3 == initcode){
+
+        }else if(4 == initcode){    //create a playable character
+            entityType = Blocking;
+            m_texture_id = load_texture(PLAYER_FILEPATH);
+
+
+            m_walking[DOWN] = new int[4] { 0, 1, 2, 3 };
+            m_walking[LEFT] = new int[4] { 4, 5, 6, 7 };
+            m_walking[RIGHT] = new int[4] { 8, 9, 10, 11 };
+            m_walking[UP] = new int[4] { 12, 13, 14, 15 };
+
+            m_animation_indices = m_walking[RIGHT];  // start George looking left
+            m_animation_frames = 4;
+            m_animation_index = 0;
+            m_animation_time = 0.0f;
+            m_animation_cols = 4;
+            m_animation_rows = 4;
+            m_height = 0.8f;
+            m_width = 0.8f;
+            LOG("This is to see that player is created");
+        }
+    }
+
 };
 #endif

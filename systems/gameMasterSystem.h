@@ -1,7 +1,10 @@
+#pragma once
 /**
 * This is the master oop that controls everything. It has pointers pointing to everything and
  * NOTHING has a pointer to master.
 */
+#ifndef gameMaster_H
+#define gameMaster_H
 
 #include <SDL_mixer.h>
 #include <SDL.h>
@@ -33,8 +36,7 @@
 
 #define LOG(argument) std::cout << argument << '\n'
 
-#ifndef gameMaster
-#define gameMaster
+
 
 
 
@@ -55,11 +57,10 @@ public:
     std::vector<Scene*> scenes; //contains pointers to all scenes, all should be on the heap btw
     ////skip entity system and collision system as they are handled by scene////
 
-
     int playerlifeCount;    //how many lives does the player have left
     int playerEnemySlain;   //how many enemies has the player killed
 
-    GameMaster(std::vector<Scene*> scenes, int playerLifeCount = 3, int playerEnemySlain = 0) :
+    GameMaster(std::vector<Scene*> scenes = {}, int playerLifeCount = 3, int playerEnemySlain = 0) :
         scenes(scenes), playerlifeCount(playerLifeCount), playerEnemySlain(playerEnemySlain){
         LOG("===GameMaster Initialized===");
         for(int i = 0; i<scenes.size(); ++i){
